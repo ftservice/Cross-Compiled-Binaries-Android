@@ -193,8 +193,9 @@ remove_binary() {
 }
 
 check_conflicts() {
-  find $MOUNTPATH/*$insloc -mindepth 1 -maxdepth 1 -type f ! -path "$MOUNTPATH/\.*" ! -path "$MOUNTPATH/ccbins/*" \( -name $i \) 2>/dev/null | sed -r "s|$MOUNTPATH/(.*)/system/.*|\1|" > $MODDIR/tmp
-  [ -s $MODDIR/tmp ] && echo -e "  Conflict ($insloc/$i) found in: $(cat $MODDIR/tmp)!"
+  find $MOUNTPATH/*$insloc -mindepth 1 -maxdepth 1 -type f ! -path "$MOUNTPATH/\.*" ! -path "$MOUNTPATH/ccbins/*" \( -name $i \) 2>/dev/null | sed -r "s|$MOUNTPATH/(.*)/system/.*|\1|" > $MODDIR/tmp2
+  [ -s $MODDIR/tmp2 ] && echo -e "  Conflict ($insloc/$i) found in: $(cat $MODDIR/tmp2)!"
+  rm -f $MODDIR/tmp2
 }
 
 install_binary() {
@@ -306,7 +307,7 @@ restore_config() {
   echo -e "Old config restored!\nReboot to apply it!\n"
 }
 
-scriptver=2
+scriptver=3
 branch=master
 dir=`pwd`; bakloc=/data/local/ccbinsbackup
 locs="/system/bin /system/xbin /system/vendor/bin /system/vendor/xbin /system/product/bin /system/product/xbin"
