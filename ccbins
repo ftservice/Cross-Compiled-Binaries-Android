@@ -223,6 +223,7 @@ check_bin_updates() {
 }
 
 remove_binary_menu() {
+  clear
   while true; do
     grep -w "$insloc" $MODDIR/.installed | awk '{print FNR + 1 ": " $1 " " $2}' > $MODDIR/tmp
     [ -s $MODDIR/tmp ] && sed -i "1i0: None, go back to main menu\n1: Remove all binaries listed below" $MODDIR/tmp || { print_pause "No binaries are installed to $insloc!\n"; break; }
@@ -251,11 +252,12 @@ remove_binary_menu() {
       toybox find $MODDIR/system -type d -empty -delete >/dev/null 2>&1
       echo -e "$binary has been removed!\n"
     done
-    clear
   done
+  clear
 }
 
 install_binary_menu() {
+  clear
   while true; do
     if [ -s $MODDIR/.installed ]; then
       local curbins="$(grep -w "$insloc" $MODDIR/.installed | awk '{print $1}' | sed -E 's/Busybox|Coreutils/Busybox Coreutils/')"
@@ -308,9 +310,9 @@ install_binary_menu() {
       install_binary -s
       echo -e " - $binary has been installed!\n"
     done
-    clear
     echo -e "Reboot for changes to take effect\n"
   done
+  clear
 }
 
 backup_config() {
@@ -334,6 +336,59 @@ restore_config() {
   touch $MODDIR/update
   echo -e "Old config restored!\nReboot to apply it!\n"
   sleep 2
+}
+
+hidden_menu() {
+  clear
+  echo "$div"
+  title_div "Welcome to the dark side"
+  echo "$div"
+  $online || { echo -e "Internet is needed for this, going back to main menu\n"; return 0; }
+  title_div "Current branch:"
+  title_div "$branch"
+  echo "$div"
+  title_div "Choose option:"
+  echo "$div"
+  while true; do
+    echo "0: Go back to main menu"
+    echo "1: Force update"
+    echo "2: Switch branch"
+    while true; do
+      read -r choice?'--> '
+      echo " "
+      case $choice in
+        0|1|2) break;;
+        q) quit;;
+        *) echo "Invalid option! Try again";;
+      esac
+    done
+    case $choice in
+      0) break;;
+      1) echo "Applying mod updates and restarting"
+         echo "$scriptver" > $MODDIR/.updated
+         wget -qO $MODDIR/.changelog https://raw.githubusercontent.com/Zackptg5/Cross-Compiled-Binaries-Android/$branch/changelog.txt 2>/dev/null
+         wget -qO $MODDIR/system/bin/ccbins https://raw.githubusercontent.com/Zackptg5/Cross-Compiled-Binaries-Android/$branch/ccbins 2>/dev/null
+         wget -qO $MODDIR/mod-util.sh https://raw.githubusercontent.com/Zackptg5/Cross-Compiled-Binaries-Android/$branch/mod-util.sh 2>/dev/null
+         umount -l /system/bin/ccbins
+         mount -o bind $MODDIR/system/bin/ccbins /system/bin/ccbins
+         ccbins && quit;;
+      2) echo "Enter branch (0 will still return to main menu):"
+         while true; do
+           read -r choice?'--> '
+           echo " "
+           case $choice in
+             0) break 2;;
+             "q") quit;;
+           esac
+           wget --spider https://raw.githubusercontent.com/Zackptg5/Cross-Compiled-Binaries-Android/$choice/ccbins 2>/dev/null || { echo "Branch doesn't exist! Try again"; continue; }
+           branch=$choice
+           sed -i "s/^branch=.*/branch=$branch/" $MODDIR/system/bin/ccbins
+           echo "Switched branch to $branch"
+           break
+         done;;
+    esac
+  done
+  clear
 }
 
 scriptver=4
@@ -392,7 +447,7 @@ while true; do
     read -r choice?'--> '
     echo " "
     case $choice in
-      0|1|2|3) break;;
+      0|1|2|3|99) break;;
       4) $online && break || echo "Invalid option! Try again";;
       5) [ -s $MODDIR/.installed ] && break || echo "Invalid option! Try again";;
       6|7) [ -d $bakloc ] && break || echo "Invalid option! Try again";;
@@ -403,13 +458,13 @@ while true; do
 
   case $choice in
     0) change_loc;;
-    1) [ -s $MODDIR/.installed ] && list_installed || echo "No binaries installed!"; print_pause " ";;
+    1) [ -s $MODDIR/.installed ] && list_installed || print_pause "No binaries installed!";;
     2) cat $MODDIR/.binaries | awk '{print $1 " " $2}'; echo " ";;
     3) [ -s $MODDIR/.installed ] && remove_binary_menu || print_pause "No binaries installed!\n";;
     4) install_binary_menu;;
     5) backup_config;;
     6) restore_config;;
     7) rm -rf $bakloc; print_pause "Backup config erased\n";;
+    99) hidden_menu;;
   esac
-  clear
 done
