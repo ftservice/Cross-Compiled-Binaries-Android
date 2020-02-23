@@ -49,6 +49,17 @@ print_pause() {
   sleep 2
 }
 
+reset() {
+  local newloc=/data/adb/modules_update/$ID
+  rm -rf $newloc
+  mkdir -p /data/adb/modules_update/$ID/system/bin 2>/dev/null
+  cp -pf $MODDIR/system/bin/ccbins $newloc/system/bin/ccbins
+  cp -pf $MODDIR/* $newloc 2>/dev/null
+  touch $MODDIR/update
+  echo -e "CCbins reset!\nReboot to apply it!\n"
+  sleep 2
+}
+
 check_updates() {
   echo -e "\nChecking for mod updates"
   rm -f $MODDIR/.updated
@@ -435,36 +446,38 @@ while true; do
   echo "$div"
   title_div "Choose option"
   echo "$div"
-  echo "0: Change install location"
-  echo "1: List all installed binaries"
-  echo "2: List all downloadable binaries"
-  echo "3: Remove binary"
-  $online && echo "4: Install binary"
-  [ -s $MODDIR/.installed ] && echo "5: Backup current config"
-  [ -d $bakloc ] && echo -e "6: Restore last config\n7: Erase backup config"
+  echo "0: Refresh CCbins (remove everything - start fresh)"
+  echo "1: Change install location"
+  echo "2: List all installed binaries"
+  echo "3: List all downloadable binaries"
+  echo "4: Remove binary"
+  $online && echo "5: Install binary"
+  [ -s $MODDIR/.installed ] && echo "6: Backup current config"
+  [ -d $bakloc ] && echo -e "7: Restore last config\n8: Erase backup config"
   echo "Type 'q' at any time to quit"
   while true; do
     read -r choice?'--> '
     echo " "
     case $choice in
-      0|1|2|3|99) break;;
-      4) $online && break || echo "Invalid option! Try again";;
-      5) [ -s $MODDIR/.installed ] && break || echo "Invalid option! Try again";;
-      6|7) [ -d $bakloc ] && break || echo "Invalid option! Try again";;
+      0|1|2|3|4|99) break;;
+      5) $online && break || echo "Invalid option! Try again";;
+      6) [ -s $MODDIR/.installed ] && break || echo "Invalid option! Try again";;
+      7|8) [ -d $bakloc ] && break || echo "Invalid option! Try again";;
       q) quit;;
       *) echo "Invalid option! Try again";;
     esac
   done
 
   case $choice in
-    0) change_loc;;
-    1) [ -s $MODDIR/.installed ] && list_installed || print_pause "No binaries installed!";;
-    2) cat $MODDIR/.binaries | awk '{print $1 " " $2}'; echo " ";;
-    3) [ -s $MODDIR/.installed ] && remove_binary_menu || print_pause "No binaries installed!\n";;
-    4) install_binary_menu;;
-    5) backup_config;;
-    6) restore_config;;
-    7) rm -rf $bakloc; print_pause "Backup config erased\n";;
+    0) reset;;
+    1) change_loc;;
+    2) [ -s $MODDIR/.installed ] && list_installed || print_pause "No binaries installed!";;
+    3) cat $MODDIR/.binaries | awk '{print $1 " " $2}'; echo " ";;
+    4) [ -s $MODDIR/.installed ] && remove_binary_menu || print_pause "No binaries installed!\n";;
+    5) install_binary_menu;;
+    6) backup_config;;
+    7) restore_config;;
+    8) rm -rf $bakloc; print_pause "Backup config erased\n";;
     99) hidden_menu;;
   esac
 done
