@@ -1,3 +1,8 @@
+5 - 2.22.2020
+* Add refresh option
+* Fix clears
+* Secret stuff
+
 4 - 2.8.2020
 * Add auto-update of binaries
 * Add changelog feature
