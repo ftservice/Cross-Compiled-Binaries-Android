@@ -49,7 +49,7 @@ print_pause() {
   sleep 2
 }
 
-reset() {
+reset_mod() {
   local newloc=/data/adb/modules_update/$ID
   rm -rf $newloc
   mkdir -p /data/adb/modules_update/$ID/system/bin 2>/dev/null
@@ -469,7 +469,7 @@ while true; do
   done
 
   case $choice in
-    0) reset;;
+    0) reset_mod;;
     1) change_loc;;
     2) [ -s $MODDIR/.installed ] && list_installed || print_pause "No binaries installed!";;
     3) cat $MODDIR/.binaries | awk '{print $1 " " $2}'; echo " ";;
