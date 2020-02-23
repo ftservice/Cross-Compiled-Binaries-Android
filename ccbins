@@ -56,6 +56,7 @@ reset_mod() {
   cp -pf $MODDIR/system/bin/ccbins $newloc/system/bin/ccbins
   cp -pf $MODDIR/* $newloc 2>/dev/null
   touch $MODDIR/update
+  rm -f $newloc/update $newloc/tmp
   echo -e "CCbins reset!\nReboot to apply it!\n"
   sleep 2
 }
