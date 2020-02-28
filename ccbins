@@ -69,7 +69,7 @@ check_updates() {
     local file="$(echo $i | cut -d , -f1)" value="$(echo $i | cut -d , -f2)"
     if [ `wget -qO - https://raw.githubusercontent.com/Zackptg5/Cross-Compiled-Binaries-Android/$branch/$(basename $file) 2>/dev/null | grep "^$value=" | cut -d = -f2` -gt `grep "^$value=" $MODDIR/$file | cut -d = -f2` ]; then
       echo "$scriptver" > $MODDIR/.updated
-      wget -qO $MODDIR/$file https://raw.githubusercontent.com/Zackptg5/Cross-Compiled-Binaries-Android/master/$(basename $file) 2>/dev/null
+      wget -qO $MODDIR/$file https://raw.githubusercontent.com/Zackptg5/Cross-Compiled-Binaries-Android/$branch/$(basename $file) 2>/dev/null
       [ "$file" == "system/bin/ccbins" ] && { umount -l /$file; mount -o bind $MODDIR/$file /$file; }
     fi
   done
@@ -405,8 +405,8 @@ hidden_menu() {
   clear
 }
 
-scriptver=6
-branch=testing
+scriptver=7
+branch=master
 dir=`pwd`; bakloc=/data/local/ccbinsbackup
 locs="/system/bin /system/xbin /system/vendor/bin /system/vendor/xbin /system/product/bin /system/product/xbin"
 [ -f $MODDIR/.loc ] && insloc="$(cat $MODDIR/.loc)" || insloc=/system/bin
