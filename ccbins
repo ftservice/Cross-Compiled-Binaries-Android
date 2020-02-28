@@ -351,6 +351,8 @@ restore_config() {
 }
 
 hidden_menu() {
+  curl https://api.github.com/repos/Zackptg5/Cross-Compiled-Binaries-Android/branches | grep "name" | awk '{print FNR ": " substr($2, 2, length($2) -3)}' > $MODDIR/tmp
+  sed -i "1i0: Keep current branch, go back to main menu" $MODDIR/tmp
   clear
   echo "$div"
   title_div "Welcome to the dark side"
@@ -384,16 +386,16 @@ hidden_menu() {
          umount -l /system/bin/ccbins
          mount -o bind $MODDIR/system/bin/ccbins /system/bin/ccbins
          ccbins && quit;;
-      2) echo "Enter branch (0 will still return to main menu):"
+      2) echo "Which branch?"
          while true; do
            read -r choice?'--> '
            echo " "
            case $choice in
              0) break 2;;
-             "q") quit;;
+             q) quit;;
+             *) [ "$(grep -w "$choice:" $MODDIR/tmp 2>/dev/null)" ] && break 2 || echo "Invalid option: $choice! Try again";;
            esac
-           wget --spider https://raw.githubusercontent.com/Zackptg5/Cross-Compiled-Binaries-Android/$choice/ccbins 2>/dev/null || { echo "Branch doesn't exist! Try again"; continue; }
-           branch=$choice
+           branch=$(grep -w "$choice:" $MODDIR/tmp | awk '{print $2}')
            sed -i "s/^branch=.*/branch=$branch/" $MODDIR/system/bin/ccbins
            echo "Switched branch to $branch"
            break
