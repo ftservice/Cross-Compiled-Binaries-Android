@@ -21,6 +21,7 @@ This repo contains a variety of static compiled binaries cross compiled for andr
 * Sed (v4.7)
 * Strace (v5.5)
 * Tar (v1.32)
+* Vim (v8.2.0356) - also includes xxd
 * Xmlstarlet
 * Zip (v3.0)
 * Zsh (v5.7.1)

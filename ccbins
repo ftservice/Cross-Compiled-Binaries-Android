@@ -405,8 +405,8 @@ hidden_menu() {
   clear
 }
 
-scriptver=7
-branch=master
+scriptver=6
+branch=testing
 dir=`pwd`; bakloc=/data/local/ccbinsbackup
 locs="/system/bin /system/xbin /system/vendor/bin /system/vendor/xbin /system/product/bin /system/product/xbin"
 [ -f $MODDIR/.loc ] && insloc="$(cat $MODDIR/.loc)" || insloc=/system/bin
