@@ -13,4 +13,5 @@ fi;
 
 clear;
 resize >/dev/null;
-TERMINFO=/system/usr/share/terminfo TERM=$term $dir/nano.bin "$@";
+ext="$(echo $@ | sed "s/.*\.//")"
+[ -f "/system/usr/share/nano/$ext.nanorc" ] && [ ! "$(echo "$@" | grep " -f ")" ] && TERMINFO=/system/usr/share/terminfo TERM=$term $dir/nano.bin -f /system/usr/share/nano/$ext.nanorc "$@" || TERMINFO=/system/usr/share/terminfo TERM=$term $dir/nano.bin "$@"
